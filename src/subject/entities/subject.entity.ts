@@ -1,19 +1,41 @@
-const MIN_PRIORITY_VALUE = 0;
+import { randomUUID } from 'crypto';
+import { isHexColor } from '../utils';
+
+const MIN_PRIORITY_VALUE = 1;
 const MAX_PRIORITY_VALUE = 10;
 const MAX_DESCRIPTION_VALUE = 200;
 const MAX_TITLE_VALUE = 60;
 
 export class Subject {
+  subjectId: string;
   title: string;
   description: string;
   priority: number;
   color: string;
 
-  constructor(input: SubjectInput) {
-    const isColorValid = this.isHexColor(input.color);
+  private constructor(input: SubjectInput) {
+    this.subjectId = input.subjectId ?? randomUUID();
+    this.title = input.title;
+    this.description = input.description;
+    this.priority = input.priority;
+    this.color = input.color;
+  }
+
+  static create(input: SubjectInput): Subject {
+    this.validate(input);
+
+    return new Subject(input);
+  }
+
+  static reconstitute(record: SubjectInput): Subject {
+    return new Subject(record);
+  }
+
+  static validate(input: SubjectInput): void {
+    const isColorValid = isHexColor(input.color);
 
     const isValidPriority =
-      input.priority > MIN_PRIORITY_VALUE &&
+      input.priority >= MIN_PRIORITY_VALUE &&
       input.priority <= MAX_PRIORITY_VALUE;
 
     const isValidDescription = input.description.length < MAX_DESCRIPTION_VALUE;
@@ -41,20 +63,11 @@ export class Subject {
         `Invalid sent title. You have to send a title with a max length of ${MAX_TITLE_VALUE}`,
       );
     }
-
-    this.title = input.title;
-    this.description = input.description;
-    this.priority = input.priority;
-    this.color = input.color;
-  }
-
-  private isHexColor(str: string): boolean {
-    const hexColorRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
-    return hexColorRegex.test(str);
   }
 }
 
 type SubjectInput = {
+  subjectId?: string;
   title: string;
   description: string;
   priority: number;
