@@ -66,7 +66,7 @@ export class Subject {
   }
 }
 
-type SubjectInput = {
+export type SubjectInput = {
   subjectId?: string;
   title: string;
   description: string;
