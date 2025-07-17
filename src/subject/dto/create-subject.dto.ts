@@ -1,1 +1,6 @@
-export class CreateSubjectDto {}
+export class CreateSubjectDto {
+  title: string;
+  description: string;
+  priority: number;
+  color: string;
+}
