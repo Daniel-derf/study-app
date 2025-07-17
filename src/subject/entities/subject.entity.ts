@@ -20,6 +20,7 @@ export class Subject {
     this.description = input.description;
     this.priority = input.priority;
     this.color = input.color;
+    this.userId = input.userId;
   }
 
   static create(input: SubjectInput): Subject {
@@ -111,6 +112,7 @@ export class Subject {
 
 export type SubjectInput = {
   subjectId?: string;
+  userId: string;
   title: string;
   description: string;
   priority: number;

@@ -39,6 +39,7 @@ describe('SubjectService', () => {
       const dto: CreateSubjectDto = {
         title: 'Test',
         description: 'Desc',
+        userId: '123',
         priority: 3,
         color: '#abc123',
       };
@@ -66,6 +67,7 @@ describe('SubjectService', () => {
         Subject.create({
           title: 'A',
           description: 'B',
+          userId: '123',
           priority: 1,
           color: '#fff',
         }),
@@ -86,6 +88,7 @@ describe('SubjectService', () => {
           title: 'foo',
           description: 'bar',
           priority: 2,
+          userId: '123',
           color: '#000',
         }),
       ];
@@ -103,6 +106,7 @@ describe('SubjectService', () => {
         title: 'X',
         description: 'Y',
         priority: 5,
+        userId: '123',
         color: '#123',
       });
       mockRepo.findById.mockResolvedValue(subj);
@@ -123,6 +127,7 @@ describe('SubjectService', () => {
       const original = Subject.create({
         title: 'Old',
         description: 'OldDesc',
+        userId: '123',
         priority: 4,
         color: '#aaa',
       });
@@ -152,6 +157,7 @@ describe('SubjectService', () => {
       const original = Subject.create({
         title: 'T',
         description: 'D',
+        userId: '123',
         priority: 1,
         color: '#fff',
       });
@@ -173,6 +179,7 @@ describe('SubjectService', () => {
     it('should delete existing subject', async () => {
       const subj = Subject.create({
         title: 'A',
+        userId: '123',
         description: 'B',
         priority: 1,
         color: '#fff',

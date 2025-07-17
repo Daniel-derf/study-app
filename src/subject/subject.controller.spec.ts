@@ -13,6 +13,7 @@ describe('SubjectController', () => {
 
   const mockSubject = Subject.reconstitute({
     title: 'T',
+    userId: 'aushjfuashf',
     description: 'D',
     priority: 1,
     color: '#fff',
@@ -47,6 +48,7 @@ describe('SubjectController', () => {
     it('should call service.create and return its result', async () => {
       const dto: CreateSubjectDto = {
         title: 'T',
+        userId: '123',
         description: 'D',
         priority: 1,
         color: '#fff',

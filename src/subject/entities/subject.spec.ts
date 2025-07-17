@@ -7,6 +7,7 @@ import { isHexColor } from '../utils';
 describe('Subject', () => {
   const VALID_INPUT: SubjectInput = {
     title: 'Valid title',
+    userId: '12312',
     description: 'Valid description under 200 characters.',
     priority: 5,
     color: '#abcdef',
@@ -74,6 +75,7 @@ describe('Subject', () => {
     it('should hydrate the instance without validating, preserving the record’s subjectId', () => {
       const record: Required<SubjectInput> = {
         subjectId: 'persisted-id',
+        userId: '1',
         title: VALID_INPUT.title,
         description: VALID_INPUT.description,
         priority: VALID_INPUT.priority,
@@ -87,6 +89,7 @@ describe('Subject', () => {
     it('should skip validation even if fields are invalid', () => {
       const badRecord: Required<SubjectInput> = {
         subjectId: 'x',
+        userId: '1',
         title: 'a'.repeat(100),
         description: 'b'.repeat(300),
         priority: 99,
