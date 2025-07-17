@@ -64,6 +64,48 @@ export class Subject {
       );
     }
   }
+
+  public changePriority(newPriority: number) {
+    if (newPriority < MIN_PRIORITY_VALUE || newPriority > MAX_PRIORITY_VALUE)
+      throw new Error(
+        `Invalid sent priority. You have to send a priority value between ${MIN_PRIORITY_VALUE} and ${MAX_PRIORITY_VALUE} `,
+      );
+
+    this.priority = newPriority;
+  }
+
+  public updateDescription(newDescription: string) {
+    const isValidDescription = newDescription.length < MAX_DESCRIPTION_VALUE;
+
+    if (!isValidDescription)
+      throw new Error(
+        `Invalid sent description. You have to send a description with a max length of ${MAX_DESCRIPTION_VALUE}`,
+      );
+
+    this.description = newDescription;
+  }
+
+  public updateTitle(newTitle: string) {
+    const isValidTitle = newTitle.length < MAX_TITLE_VALUE;
+
+    if (!isValidTitle) {
+      throw new Error(
+        `Invalid sent title. You have to send a title with a max length of ${MAX_TITLE_VALUE}`,
+      );
+    }
+
+    this.title = newTitle;
+  }
+
+  public updateColor(newColor: string) {
+    const isColorValid = isHexColor(newColor);
+
+    if (!isColorValid) {
+      throw new Error('Invalid sent color. You have to send a hex color code.');
+    }
+
+    this.color = newColor;
+  }
 }
 
 export type SubjectInput = {
