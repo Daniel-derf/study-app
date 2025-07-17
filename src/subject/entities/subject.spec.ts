@@ -33,9 +33,9 @@ describe('Subject', () => {
     });
 
     it('should respect a provided subjectId in the input', () => {
-      const customInput = { ...VALID_INPUT, subjectId: 'custom-id' };
+      const customInput = { ...VALID_INPUT, subjectId: FAKE_UUID };
       const subj = Subject.create(customInput);
-      expect(subj.subjectId).toBe('custom-id');
+      expect(subj.subjectId).toBe(FAKE_UUID);
     });
 
     it('should throw an error if the color is invalid', () => {
@@ -85,7 +85,6 @@ describe('Subject', () => {
     });
 
     it('should skip validation even if fields are invalid', () => {
-      // invalid color, priority out of range, etc.
       const badRecord: Required<SubjectInput> = {
         subjectId: 'x',
         title: 'a'.repeat(100),
@@ -116,6 +115,70 @@ describe('Subject', () => {
       ['fff', '#ff', '#12345g', '#1234'].forEach((c) => {
         expect(isHexColor(c)).toBe(false);
         expect(() => Subject.validate({ ...VALID_INPUT, color: c })).toThrow();
+      });
+    });
+  });
+
+  describe('instance methods', () => {
+    let subj: Subject;
+
+    beforeEach(() => {
+      subj = Subject.create(VALID_INPUT);
+    });
+
+    describe('changePriority()', () => {
+      it('should update to a valid new priority', () => {
+        subj.changePriority(7);
+        expect(subj.priority).toBe(7);
+      });
+
+      it('should throw if new priority is out of range', () => {
+        expect(() => subj.changePriority(0)).toThrow(
+          /priority value between 1 and 10/,
+        );
+        expect(() => subj.changePriority(11)).toThrow(
+          /priority value between 1 and 10/,
+        );
+      });
+    });
+
+    describe('updateDescription()', () => {
+      it('should update to a valid new description', () => {
+        const desc = 'New short description';
+        subj.updateDescription(desc);
+        expect(subj.description).toBe(desc);
+      });
+
+      it('should throw if description is too long', () => {
+        const longDesc = 'x'.repeat(201);
+        expect(() => subj.updateDescription(longDesc)).toThrow(
+          /max length of 200/,
+        );
+      });
+    });
+
+    describe('updateTitle()', () => {
+      it('should update to a valid new title', () => {
+        const title = 'Another title';
+        subj.updateTitle(title);
+        expect(subj.title).toBe(title);
+      });
+
+      it('should throw if title is too long', () => {
+        const longTitle = 'x'.repeat(61);
+        expect(() => subj.updateTitle(longTitle)).toThrow(/max length of 60/);
+      });
+    });
+
+    describe('updateColor()', () => {
+      it('should update to a valid new color', () => {
+        const color = '#123456';
+        subj.updateColor(color);
+        expect(subj.color).toBe(color);
+      });
+
+      it('should throw if color is invalid', () => {
+        expect(() => subj.updateColor('not-a-color')).toThrow(/hex color code/);
       });
     });
   });
