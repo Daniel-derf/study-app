@@ -73,16 +73,23 @@ class Priority {
 
   static create({ priority }: PriorityInput) {
     const isValidPriority =
-      priority >= this.MIN_VALUE && priority <= this.MAX_VALUE;
+      priority >= this.MIN_VALUE &&
+      priority <= this.MAX_VALUE &&
+      typeof priority === 'number';
 
     if (!isValidPriority) throw new Error('Invalid priority.');
 
+    return new Priority({ priority });
+  }
+
+  static reconstitute({ priority }: PriorityInput) {
     return new Priority({ priority });
   }
 }
 
 class Title {
   static MAX_LENGTH = 60;
+  static MIN_LENGTH = 2;
 
   title: string;
 
@@ -91,7 +98,10 @@ class Title {
   }
 
   static create({ title }: TitleInput) {
-    const isValidTitle = title.length <= this.MAX_LENGTH;
+    const isValidTitle =
+      title.length >= this.MIN_LENGTH &&
+      title.length <= this.MAX_LENGTH &&
+      typeof title === 'string';
 
     if (!isValidTitle) {
       throw new Error(`Invalid sent title.`);
@@ -99,9 +109,14 @@ class Title {
 
     return new Title({ title });
   }
+
+  static reconstitute({ title }: TitleInput) {
+    return new Title({ title });
+  }
 }
 
 class Description {
+  static MIN_LENGTH = 5;
   static MAX_LENGTH = 200;
 
   description: string;
@@ -112,12 +127,18 @@ class Description {
 
   static create({ description }: DescriptionInput) {
     const isValidDescription =
-      description.length < this.MAX_LENGTH && typeof description === 'string';
+      description.length >= this.MIN_LENGTH &&
+      description.length <= this.MAX_LENGTH &&
+      typeof description === 'string';
 
     if (!isValidDescription) {
       throw new Error(`Invalid description.`);
     }
 
+    return new Description({ description });
+  }
+
+  static reconstitute({ description }: DescriptionInput) {
     return new Description({ description });
   }
 }
@@ -160,10 +181,12 @@ export class Subject {
   static reconstitute(record: SubjectInput): Subject {
     const subjectInput: SubjectEntityInput = {
       userId: record.userId,
-      title: Title.create({ title: record.title }),
-      description: Description.create({ description: record.description }),
-      color: Color.create({ colorCode: record.color }),
-      priority: Priority.create({ priority: record.priority }),
+      title: Title.reconstitute({ title: record.title }),
+      description: Description.reconstitute({
+        description: record.description,
+      }),
+      color: Color.reconstitute({ colorCode: record.color }),
+      priority: Priority.reconstitute({ priority: record.priority }),
     };
 
     return new Subject(subjectInput);
