@@ -26,6 +26,15 @@ type DescriptionInput = {
   description: string;
 };
 
+export type SubjectInput = {
+  subjectId?: string;
+  userId: string;
+  title: string;
+  description: string;
+  priority: number;
+  color: string;
+};
+
 // Value Objects
 class Color {
   colorCode: string;
@@ -184,12 +193,3 @@ export class Subject {
     this.color = color;
   }
 }
-
-export type SubjectInput = {
-  subjectId?: string;
-  userId: string;
-  title: string;
-  description: string;
-  priority: number;
-  color: string;
-};
