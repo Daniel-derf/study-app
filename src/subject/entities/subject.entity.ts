@@ -1,10 +1,5 @@
 import { randomUUID } from 'crypto';
 
-const MIN_PRIORITY_VALUE = 1;
-const MAX_PRIORITY_VALUE = 10;
-const MAX_DESCRIPTION_VALUE = 200;
-const MAX_TITLE_VALUE = 60;
-
 // Types
 type ColorInput = {
   colorCode: string;
@@ -58,6 +53,9 @@ class Color {
 }
 
 class Priority {
+  static MIN_VALUE = 1;
+  static MAX_VALUE = 10;
+
   priority: number;
 
   private constructor({ priority }: PriorityInput) {
@@ -66,7 +64,7 @@ class Priority {
 
   static create({ priority }: PriorityInput) {
     const isValidPriority =
-      priority >= MIN_PRIORITY_VALUE && priority <= MAX_PRIORITY_VALUE;
+      priority >= this.MIN_VALUE && priority <= this.MAX_VALUE;
 
     if (!isValidPriority) throw new Error('Invalid priority.');
 
@@ -75,6 +73,8 @@ class Priority {
 }
 
 class Title {
+  static MAX_LENGTH = 60;
+
   title: string;
 
   private constructor({ title }: TitleInput) {
@@ -82,7 +82,7 @@ class Title {
   }
 
   static create({ title }: TitleInput) {
-    const isValidTitle = title.length < MAX_TITLE_VALUE;
+    const isValidTitle = title.length <= this.MAX_LENGTH;
 
     if (!isValidTitle) {
       throw new Error(`Invalid sent title.`);
@@ -93,6 +93,8 @@ class Title {
 }
 
 class Description {
+  static MAX_LENGTH = 200;
+
   description: string;
 
   private constructor({ description }: DescriptionInput) {
@@ -100,7 +102,8 @@ class Description {
   }
 
   static create({ description }: DescriptionInput) {
-    const isValidDescription = description.length < MAX_DESCRIPTION_VALUE;
+    const isValidDescription =
+      description.length < this.MAX_LENGTH && typeof description === 'string';
 
     if (!isValidDescription) {
       throw new Error(`Invalid description.`);
@@ -110,6 +113,7 @@ class Description {
   }
 }
 
+// Entities
 export class Subject {
   subjectId: string;
   userId: string;
