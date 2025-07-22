@@ -23,11 +23,7 @@ export class SubjectService {
     return this.subjectRepository.findAll();
   }
 
-  async find(filter: {
-    priority: number;
-    title: string;
-    userId: string;
-  }): Promise<Subject[]> {
+  async find(filter: { priority: number; title: string }): Promise<Subject[]> {
     return this.subjectRepository.findBy(filter);
   }
 

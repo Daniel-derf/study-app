@@ -7,54 +7,105 @@ import {
   Body,
   Param,
   Query,
+  HttpCode,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Subject } from './entities/subject.entity';
 
+@ApiTags('Subjects')
 @Controller('subjects')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
+  @ApiCreatedResponse({
+    description: 'Creates and returns a Subject',
+    type: Subject,
+  })
+  @ApiOperation({ summary: 'Create a new study subject' })
   @Post()
-  create(@Body() createSubjectDto: CreateSubjectDto): Promise<Subject> {
-    return this.subjectService.create(createSubjectDto);
+  async create(@Body() createSubjectDto: CreateSubjectDto) {
+    const subject = await this.subjectService.create(createSubjectDto);
+
+    return { message: 'Subject created successfully!', data: subject };
   }
 
+  @ApiOkResponse({
+    description: 'List of Subject objects',
+    type: Subject,
+    isArray: true,
+  })
+  @ApiOperation({ summary: 'Get all study subjects for the logged-in user' })
   @Get()
-  findAll(): Promise<Subject[]> {
-    return this.subjectService.findAll();
+  async findAll() {
+    const data = this.subjectService.findAll();
+
+    return { data };
   }
 
+  @ApiOkResponse({
+    description: 'List of filtered Subject objects',
+    type: Subject,
+    isArray: true,
+  })
+  @ApiOperation({
+    summary: 'Search study subjects for the logged-in user with filters',
+  })
   @Get('search')
-  find(
+  async find(
     @Query('priority') priority: string,
     @Query('title') title: string,
-    @Query('userId') userId: string,
-  ): Promise<Subject[]> {
-    return this.subjectService.find({
+  ) {
+    const data = this.subjectService.find({
       priority: Number(priority),
       title,
-      userId,
     });
+
+    return { data };
   }
 
+  @ApiOkResponse({
+    description: 'Subject object',
+    type: Subject,
+  })
+  @ApiOperation({
+    summary: 'Get a study subject by ID if it belongs to the logged-in user',
+  })
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Subject> {
-    return this.subjectService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const data = this.subjectService.findOne(id);
+
+    return { data };
   }
 
+  @ApiOkResponse({
+    description: 'Subject updated successfully',
+    type: Subject,
+  })
+  @ApiOperation({ summary: 'Update a study subject for the logged-in user' })
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateSubjectDto: UpdateSubjectDto,
-  ): Promise<Subject> {
-    return this.subjectService.update(id, updateSubjectDto);
+  ) {
+    const subject = await this.subjectService.update(id, updateSubjectDto);
+
+    return { message: 'Subject updated successfully', data: subject };
   }
 
+  @ApiOperation({ summary: 'Delete a study subject for the logged-in user' })
+  @ApiNoContentResponse({ description: 'Subject deleted successfully' })
+  @HttpCode(204)
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.subjectService.remove(id);
+  async remove(@Param('id') id: string) {
+    await this.subjectService.remove(id);
   }
 }

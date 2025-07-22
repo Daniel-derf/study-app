@@ -5,11 +5,7 @@ export interface ISubjectRepository {
 
   findById(input: { subjectId: string }): Promise<Subject>;
 
-  findBy(input: {
-    priority: number;
-    title: string;
-    userId: string;
-  }): Promise<Subject[]>;
+  findBy(input: { priority: number; title: string }): Promise<Subject[]>;
 
   save(subject: Subject): Promise<void>;
 
