@@ -1,5 +1,3 @@
-// src/subject/subject.controller.ts
-
 import {
   Controller,
   Get,
