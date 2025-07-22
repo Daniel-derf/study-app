@@ -7,8 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Minha API')
-    .setDescription('Documentação gerada pelo Swagger')
+    .setTitle('Study App - Backend')
+    .setDescription('Backend de um App de estudos e produtividade')
     .setVersion('1.0')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
