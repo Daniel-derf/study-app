@@ -1,48 +1,46 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { UserService } from './user.service';
+import { Controller, Post, Body, Param } from '@nestjs/common';
+import { ChangeUserName } from './use-cases/change-username.usecase';
+import { ChangeUserPhotoUseCase } from './use-cases/change-user-photo.usecase';
+import { CreateUserUseCase } from './use-cases/create-user.usecase';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ChangeUserPhotoDto } from './dto/change-user-photo.dto';
+import { ChangeUserNameDto } from './dto/change-username.dto';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly changeUserNameUseCase: ChangeUserName,
+    private readonly changeUserPhotoUseCase: ChangeUserPhotoUseCase,
+  ) {}
 
-  @ApiOperation({ summary: 'Route to create new user' })
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() dto: CreateUserDto) {
+    return this.createUserUseCase.execute({
+      name: dto.name,
+      profileImgUrl: dto.profileImgUrl,
+    });
   }
 
-  @ApiOperation({ summary: 'Route to Admin user find all users' })
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Post(':userId/change-name')
+  async changeName(
+    @Param('userId') userId: string,
+    @Body() dto: ChangeUserNameDto,
+  ) {
+    return this.changeUserNameUseCase.execute({
+      userId,
+      name: dto.name,
+    });
   }
 
-  @ApiOperation({ summary: 'Route to Admin user find one user' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
-  }
-
-  @ApiOperation({ summary: 'Route to update a user' })
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
-
-  @ApiOperation({ summary: 'Route to Admin user delete one user' })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Post(':userId/change-photo')
+  async changePhoto(
+    @Param('userId') userId: string,
+    @Body() dto: ChangeUserPhotoDto,
+  ) {
+    return this.changeUserPhotoUseCase.execute({
+      userId,
+      photoUrl: dto.photoUrl,
+    });
   }
 }
