@@ -1,4 +1,4 @@
-class Name {
+export class Name {
   name: string;
 
   private constructor(name: string) {
@@ -6,7 +6,7 @@ class Name {
   }
 
   static create(name: string) {
-    if (name.length < 3 && name.length > 100) {
+    if (name.length < 3 || name.length > 100) {
       throw new Error('Invalid name');
     }
 
@@ -18,7 +18,7 @@ class Name {
   }
 }
 
-class Url {
+export class Url {
   url: string;
 
   private constructor(url: string) {
@@ -75,6 +75,8 @@ export class User {
 
   static create(input: UserInput) {
     const name = Name.create(input.name);
+    console.log(input.name);
+    console.log({ name });
     const profileImgUrl = Url.create(input.profileImgUrl);
     const userId = '';
 
