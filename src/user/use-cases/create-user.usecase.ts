@@ -8,6 +8,8 @@ export class CreateUserUseCase {
     const user = User.create(input);
 
     await this.userRepository.save(user);
+
+    return user;
   }
 }
 
