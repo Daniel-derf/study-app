@@ -75,8 +75,6 @@ export class User {
 
   static create(input: UserInput) {
     const name = Name.create(input.name);
-    console.log(input.name);
-    console.log({ name });
     const profileImgUrl = Url.create(input.profileImgUrl);
     const userId = '';
 
