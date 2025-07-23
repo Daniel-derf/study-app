@@ -3,28 +3,33 @@ import { AuthService } from './auth.service';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Route to login' })
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    // return this.authService.create(createAuthDto);
+  async login(@Body() dto: LoginDto) {
+    const jwt = await this.authService.login(dto);
+
+    return { data: { jwt } };
   }
 
-  @Post('register')
-  register() {
-    // return this.authService.findAll();
-  }
-
+  @ApiOperation({ summary: 'Route to recover password through email' })
   @Post('forgot-password')
-  forgotPassword(@Body() dto: ForgotPasswordDto) {
-    // return this.authService.findOne(+id);
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.authService.forgotPassoword(dto);
+
+    return { message: 'A recovery email was sent to your email' };
   }
 
+  @ApiOperation({ summary: 'Route to confirm registered email' })
   @Post('confirm-email')
-  confirmEmail(@Body() dto: ConfirmEmailDto) {
-    // return this.authService.findOne(+id);
+  async confirmEmail(@Body() dto: ConfirmEmailDto) {
+    await this.authService.confirmEmail(dto);
+
+    return { message: 'Email confirmed successfully' };
   }
 }
