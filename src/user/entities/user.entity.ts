@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 export class Name {
   name: string;
 
@@ -76,7 +78,7 @@ export class User {
   static create(input: UserInput) {
     const name = Name.create(input.name);
     const profileImgUrl = Url.create(input.profileImgUrl);
-    const userId = '';
+    const userId = randomUUID();
 
     return new User({ name, profileImgUrl, userId });
   }
