@@ -57,30 +57,57 @@ export class Url {
   }
 }
 
+export class Email {
+  readonly value: string;
+
+  private constructor(email: string) {
+    this.value = email;
+  }
+
+  static create(email: string): Email {
+    const normalized = email.trim().toLowerCase();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(normalized)) {
+      throw new Error('Invalid email');
+    }
+
+    return new Email(normalized);
+  }
+
+  static reconstitute(email: string): Email {
+    return new Email(email);
+  }
+}
+
 type UserInnerInput = {
   userId: string;
   name: Name;
   profileImgUrl: Url;
+  email: Email;
 };
 
 export class User {
   userId: string;
-
   name: Name;
+  email: Email;
   profileImgUrl: Url;
 
   private constructor(input: UserInnerInput) {
     this.userId = input.userId;
     this.name = input.name;
     this.profileImgUrl = input.profileImgUrl;
+    this.email = input.email;
   }
 
   static create(input: UserInput) {
     const name = Name.create(input.name);
+    const email = Email.create(input.email);
     const profileImgUrl = Url.create(input.profileImgUrl);
     const userId = randomUUID();
 
-    return new User({ name, profileImgUrl, userId });
+    return new User({ name, profileImgUrl, userId, email });
   }
 
   static reconstitute(input: UserInput) {
@@ -88,6 +115,7 @@ export class User {
       userId: input.userId,
       name: Name.reconstitute(input.name),
       profileImgUrl: Url.reconstitute(input.profileImgUrl),
+      email: Email.reconstitute(input.email),
     };
 
     return new User(entityInput);
@@ -97,6 +125,7 @@ export class User {
     return {
       userId: this.userId,
       name: this.name.name,
+      email: this.email.value,
       profileImgUrl: this.profileImgUrl.url,
     };
   }
@@ -112,10 +141,17 @@ export class User {
 
     this.profileImgUrl = url;
   }
+
+  changeEmail(newEmail: string) {
+    const email = Email.create(newEmail);
+
+    this.email = email;
+  }
 }
 
 export type UserInput = {
   userId?: string;
   name: string;
+  email: string;
   profileImgUrl: string;
 };
