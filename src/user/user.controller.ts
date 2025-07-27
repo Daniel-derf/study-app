@@ -5,7 +5,9 @@ import { CreateUserUseCase } from './use-cases/create-user.usecase';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ChangeUserPhotoDto } from './dto/change-user-photo.dto';
 import { ChangeUserNameDto } from './dto/change-username.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(
@@ -14,6 +16,7 @@ export class UserController {
     private readonly changeUserPhotoUseCase: ChangeUserPhotoUseCase,
   ) {}
 
+  @ApiOperation({ summary: 'Create a new user' })
   @Post()
   async create(@Body() dto: CreateUserDto) {
     return this.createUserUseCase.execute({
@@ -22,6 +25,7 @@ export class UserController {
     });
   }
 
+  @ApiOperation({ summary: 'Change the name of one user' })
   @Post(':userId/change-name')
   async changeName(
     @Param('userId') userId: string,
@@ -33,6 +37,7 @@ export class UserController {
     });
   }
 
+  @ApiOperation({ summary: 'Change the photo of one user' })
   @Post(':userId/change-photo')
   async changePhoto(
     @Param('userId') userId: string,
