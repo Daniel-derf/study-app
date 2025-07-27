@@ -14,6 +14,8 @@ export class ChangeUserNameUseCase {
 
     user.changeName(input.name);
 
+    console.log(user.userId);
+
     await this.userRepository.save(user);
 
     return user;
