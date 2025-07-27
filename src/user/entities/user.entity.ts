@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { DomainError } from '../../common/domain.error';
 
 export class Name {
   name: string;
@@ -9,7 +10,7 @@ export class Name {
 
   static create(name: string) {
     if (name?.length < 3 || name?.length > 100) {
-      throw new Error('Invalid name');
+      throw new DomainError('Invalid name');
     }
 
     return new Name(name);
@@ -46,7 +47,7 @@ export class Url {
 
   static create(url: string) {
     if (!this.isValidUrl(url)) {
-      throw new Error('Invalid Profile Image URL');
+      throw new DomainError('Invalid Profile Image URL');
     }
 
     return new Url(url);
@@ -70,7 +71,7 @@ export class Email {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(normalized)) {
-      throw new Error('Invalid email');
+      throw new DomainError('Invalid email');
     }
 
     return new Email(normalized);
