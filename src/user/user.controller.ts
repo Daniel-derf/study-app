@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Param } from '@nestjs/common';
-import { ChangeUserName } from './use-cases/change-username.usecase';
+import { ChangeUserNameUseCase } from './use-cases/change-username.usecase';
 import { ChangeUserPhotoUseCase } from './use-cases/change-user-photo.usecase';
 import { CreateUserUseCase } from './use-cases/create-user.usecase';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -10,7 +10,7 @@ import { ChangeUserNameDto } from './dto/change-username.dto';
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
-    private readonly changeUserNameUseCase: ChangeUserName,
+    private readonly changeUserNameUseCase: ChangeUserNameUseCase,
     private readonly changeUserPhotoUseCase: ChangeUserPhotoUseCase,
   ) {}
 

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14 # ou outra tag de sua preferência
+    container_name: pg-db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser # usuário padrão
+      POSTGRES_PASSWORD: mypassword # senha padrão
+      POSTGRES_DB: mydatabase # banco que será criado
+    ports:
+      - '5432:5432' # expõe a porta padrão
+    volumes:
+      - pgdata:/var/lib/postgresql/data # persiste os dados
+
+volumes:
+  pgdata:

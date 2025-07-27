@@ -1,17 +1,46 @@
+import { PrismaService } from '../../database/prisma.service';
 import { User } from '../entities/user.entity';
 import { IUserRepository } from './user.repository.interface';
 
 export class UserPrismaRepository implements IUserRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
   async findById(userId: string): Promise<User> {
-    throw new Error('Method not implemented.');
+    const data = await this.prisma.user.findUnique({ where: { userId } });
+
+    if (!data) return null;
+
+    const user = User.reconstitute(data);
+
+    return user;
   }
+
   async findAll(): Promise<User[]> {
-    throw new Error('Method not implemented.');
+    const data = await this.prisma.user.findMany();
+
+    const users = data.map(User.reconstitute);
+
+    return users;
   }
+
   async save(user: User): Promise<void> {
-    throw new Error('Method not implemented.');
+    const data = user.toPrimitives();
+
+    await this.prisma.user.upsert({
+      where: { userId: data.userId },
+      update: {
+        name: data.name,
+        profileImgUrl: data.profileImgUrl,
+      },
+      create: {
+        userId: data.userId,
+        name: data.name,
+        profileImgUrl: data.profileImgUrl,
+      },
+    });
   }
-  async delete(user: User): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  async delete(userId: string): Promise<void> {
+    await this.prisma.user.delete({ where: { userId } });
   }
 }

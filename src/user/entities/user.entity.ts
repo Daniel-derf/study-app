@@ -91,6 +91,14 @@ export class User {
     return new User(entityInput);
   }
 
+  toPrimitives() {
+    return {
+      userId: this.userId,
+      name: this.name.name,
+      profileImgUrl: this.profileImgUrl.url,
+    };
+  }
+
   changeName(newName: string) {
     const name = Name.create(newName);
 

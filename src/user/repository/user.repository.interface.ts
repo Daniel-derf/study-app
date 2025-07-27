@@ -4,5 +4,5 @@ export interface IUserRepository {
   findById(userId: string): Promise<User>;
   findAll(): Promise<User[]>;
   save(user: User): Promise<void>;
-  delete(user: User): Promise<void>;
+  delete(userId: string): Promise<void>;
 }
