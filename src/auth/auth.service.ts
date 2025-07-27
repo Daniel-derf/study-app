@@ -1,18 +1,49 @@
-import { Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
+import { PrismaService } from '../database/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
-import { PrismaService } from '../database/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  async login(dto: LoginDto) {}
+  async login(dto: LoginDto): Promise<string> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
 
-  // async register(dto: ) {}
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
-  async forgotPassoword(dto: ForgotPasswordDto) {}
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash,
+    );
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
-  async confirmEmail(dto: ConfirmEmailDto) {}
+    const payload = {
+      sub: user.userId,
+      email: user.email,
+    };
+
+    const token = await this.jwtService.signAsync(payload);
+    return token;
+  }
+
+  async forgotPassoword(dto: ForgotPasswordDto) {
+    // Em branco por enquanto
+  }
+
+  async confirmEmail(dto: ConfirmEmailDto) {
+    // Em branco por enquanto
+  }
 }
