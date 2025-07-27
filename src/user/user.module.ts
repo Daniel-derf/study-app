@@ -6,6 +6,7 @@ import { ChangeUserPhotoUseCase } from './use-cases/change-user-photo.usecase';
 import { UserPrismaRepository } from './repository/user.repository.prisma';
 import { PrismaService } from '../database/prisma.service';
 import { GetAllUsersUseCase } from './use-cases/get-all-users.usecase';
+import { BcryptHasher } from '../auth/hasher';
 
 @Module({
   controllers: [UserController],
@@ -16,6 +17,7 @@ import { GetAllUsersUseCase } from './use-cases/get-all-users.usecase';
     GetAllUsersUseCase,
     { provide: 'IUserRepository', useClass: UserPrismaRepository },
     PrismaService,
+    BcryptHasher,
   ],
 })
 export class UserModule {}

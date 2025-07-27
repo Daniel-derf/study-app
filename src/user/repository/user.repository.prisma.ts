@@ -25,19 +25,23 @@ export class UserPrismaRepository implements IUserRepository {
     return users;
   }
 
-  async save(user: User): Promise<void> {
+  async save(user: User, passwordHash?: string): Promise<void> {
     const data = user.toPrimitives();
 
     await this.prisma.user.upsert({
       where: { userId: data.userId },
       update: {
         name: data.name,
+        email: data.email,
         profileImgUrl: data.profileImgUrl,
+        passwordHash,
       },
       create: {
         userId: data.userId,
         name: data.name,
+        email: data.email,
         profileImgUrl: data.profileImgUrl,
+        passwordHash,
       },
     });
   }

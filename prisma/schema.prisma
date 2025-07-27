@@ -18,7 +18,10 @@ model User {
   userId String @id @default(uuid())
 
   name          String
-  profileImgUrl String @map("profile_img_url")
+  email         String
+  profileImgUrl String? @map("profile_img_url")
+
+  passwordHash String @map("password_hash")
 
   @@map("users")
 }

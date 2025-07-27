@@ -22,6 +22,8 @@ export class UserController {
   @Post()
   async create(@Body() dto: CreateUserDto) {
     return this.createUserUseCase.execute({
+      email: dto.email,
+      password: dto.password,
       name: dto.name,
       profileImgUrl: dto.profileImgUrl,
     });
