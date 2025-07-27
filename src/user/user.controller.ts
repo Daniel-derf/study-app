@@ -54,9 +54,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get all Users' })
   @Get('')
   async getAllUsers() {
-    const users = (await this.getAllUsersUseCase.execute()).map((u) =>
-      u.toPrimitives(),
-    );
+    const users = await this.getAllUsersUseCase.execute();
 
     return users;
   }
