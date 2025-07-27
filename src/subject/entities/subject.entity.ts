@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { DomainError } from '../../common/domain.error';
 
 // Types
 type ColorInput = {
@@ -46,7 +47,7 @@ class Color {
   static create(input: ColorInput) {
     const isColorValid = this.isHexColor(input.colorCode);
 
-    if (!isColorValid) throw new Error('Invalid color hex code');
+    if (!isColorValid) throw new DomainError('Invalid color hex code');
 
     return new Color(input);
   }
@@ -77,7 +78,7 @@ class Priority {
       priority <= this.MAX_VALUE &&
       typeof priority === 'number';
 
-    if (!isValidPriority) throw new Error('Invalid priority.');
+    if (!isValidPriority) throw new DomainError('Invalid priority.');
 
     return new Priority({ priority });
   }
@@ -104,7 +105,7 @@ class Title {
       typeof title === 'string';
 
     if (!isValidTitle) {
-      throw new Error(`Invalid sent title.`);
+      throw new DomainError(`Invalid sent title.`);
     }
 
     return new Title({ title });
@@ -132,7 +133,7 @@ class Description {
       typeof description === 'string';
 
     if (!isValidDescription) {
-      throw new Error(`Invalid description.`);
+      throw new DomainError(`Invalid description.`);
     }
 
     return new Description({ description });

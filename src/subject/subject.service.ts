@@ -1,6 +1,4 @@
-// src/subject/subject.service.ts
-
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { ISubjectRepository } from './repositories/subject.interface.repository';
@@ -54,7 +52,8 @@ export class SubjectService {
   async remove(id: string): Promise<void> {
     const isSubjectExistent = await this.findOne(id);
 
-    if (!isSubjectExistent) throw new Error('Subject does not exist');
+    if (!isSubjectExistent)
+      throw new BadRequestException('Subject does not exist');
 
     await this.subjectRepository.delete(id);
   }
