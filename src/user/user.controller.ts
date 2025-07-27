@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Param, Get, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Get,
+  UseGuards,
+  HttpCode,
+} from '@nestjs/common';
 import { ChangeUserNameUseCase } from './use-cases/change-username.usecase';
 import { ChangeUserPhotoUseCase } from './use-cases/change-user-photo.usecase';
 import { CreateUserUseCase } from './use-cases/create-user.usecase';
@@ -33,6 +41,7 @@ export class UserController {
   @ApiBearerAuth('bearerAuth')
   @ApiOperation({ summary: 'Change the name of one user' })
   @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
   @Post(':userId/change-name')
   async changeName(
     @Param('userId') userId: string,
@@ -44,8 +53,9 @@ export class UserController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Change the photo of one user' })
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
   @Post(':userId/change-photo')
   async changePhoto(
     @Param('userId') userId: string,
@@ -57,8 +67,9 @@ export class UserController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all Users' })
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
   @Get('')
   async getAllUsers() {
     const users = await this.getAllUsersUseCase.execute();

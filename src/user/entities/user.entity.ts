@@ -8,7 +8,7 @@ export class Name {
   }
 
   static create(name: string) {
-    if (name.length < 3 || name.length > 100) {
+    if (name?.length < 3 || name?.length > 100) {
       throw new Error('Invalid name');
     }
 
@@ -65,7 +65,7 @@ export class Email {
   }
 
   static create(email: string): Email {
-    const normalized = email.trim().toLowerCase();
+    const normalized = email?.trim()?.toLowerCase();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -102,9 +102,9 @@ export class User {
   }
 
   static create(input: UserInput) {
-    const name = Name.create(input.name);
-    const email = Email.create(input.email);
-    const profileImgUrl = Url.create(input.profileImgUrl);
+    const name = Name.create(input?.name);
+    const email = Email.create(input?.email);
+    const profileImgUrl = Url.create(input?.profileImgUrl);
     const userId = randomUUID();
 
     return new User({ name, profileImgUrl, userId, email });

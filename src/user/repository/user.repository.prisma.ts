@@ -10,7 +10,9 @@ export class UserPrismaRepository implements IUserRepository {
   async findBy({ email }: { email: string }): Promise<User> {
     const data = await this.prisma.user.findUnique({ where: { email } });
 
-    const user = User.create(data);
+    if (!data) return null;
+
+    const user = User.reconstitute(data);
 
     return user;
   }
@@ -49,7 +51,7 @@ export class UserPrismaRepository implements IUserRepository {
         name: data.name,
         email: data.email,
         profileImgUrl: data.profileImgUrl,
-        passwordHash,
+        passwordHash: passwordHash ?? '',
       },
     });
   }
