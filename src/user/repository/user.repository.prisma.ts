@@ -7,6 +7,14 @@ import { IUserRepository } from './user.repository.interface';
 export class UserPrismaRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findBy({ email }: { email: string }): Promise<User> {
+    const data = await this.prisma.user.findUnique({ where: { email } });
+
+    const user = User.create(data);
+
+    return user;
+  }
+
   async findById(userId: string): Promise<User> {
     const data = await this.prisma.user.findUnique({ where: { userId } });
 

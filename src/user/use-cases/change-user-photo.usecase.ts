@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { IUserRepository } from '../repository/user.repository.interface';
 
 export class ChangeUserPhotoUseCase {
@@ -9,6 +9,8 @@ export class ChangeUserPhotoUseCase {
 
   async execute(input: Input) {
     const user = await this.userRepository.findById(input.userId);
+
+    if (!user) throw new BadRequestException('User does not exist');
 
     user.changeImage(input.photoUrl);
 

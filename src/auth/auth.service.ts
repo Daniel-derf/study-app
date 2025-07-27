@@ -13,7 +13,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(dto: LoginDto): Promise<string> {
+  async login(dto: LoginDto): Promise<{
+    accessToken: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      profileImgUrl: string;
+    };
+  }> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -35,15 +43,26 @@ export class AuthService {
       email: user.email,
     };
 
-    const token = await this.jwtService.signAsync(payload);
-    return token;
+    const accessToken = await this.jwtService.signAsync(payload);
+
+    return {
+      accessToken,
+      user: {
+        id: user.userId,
+        email: user.email,
+        name: user.name,
+        profileImgUrl: user.profileImgUrl,
+      },
+    };
   }
 
   async forgotPassoword(dto: ForgotPasswordDto) {
+    console.log(dto);
     // Em branco por enquanto
   }
 
   async confirmEmail(dto: ConfirmEmailDto) {
+    console.log(dto);
     // Em branco por enquanto
   }
 }

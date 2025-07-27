@@ -1,12 +1,13 @@
-import { Controller, Post, Body, Param, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, UseGuards } from '@nestjs/common';
 import { ChangeUserNameUseCase } from './use-cases/change-username.usecase';
 import { ChangeUserPhotoUseCase } from './use-cases/change-user-photo.usecase';
 import { CreateUserUseCase } from './use-cases/create-user.usecase';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ChangeUserPhotoDto } from './dto/change-user-photo.dto';
 import { ChangeUserNameDto } from './dto/change-username.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetAllUsersUseCase } from './use-cases/get-all-users.usecase';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -29,7 +30,9 @@ export class UserController {
     });
   }
 
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ summary: 'Change the name of one user' })
+  @UseGuards(JwtAuthGuard)
   @Post(':userId/change-name')
   async changeName(
     @Param('userId') userId: string,
@@ -41,6 +44,7 @@ export class UserController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Change the photo of one user' })
   @Post(':userId/change-photo')
   async changePhoto(
@@ -53,6 +57,7 @@ export class UserController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all Users' })
   @Get('')
   async getAllUsers() {

@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [SubjectModule, AuthModule, UserModule],
+  imports: [AuthModule, SubjectModule, UserModule],
   controllers: [],
   providers: [AppService],
 })
