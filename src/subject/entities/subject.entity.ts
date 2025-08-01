@@ -193,27 +193,38 @@ export class Subject {
     return new Subject(subjectInput);
   }
 
-  public changePriority(newPriority: number) {
+  changePriority(newPriority: number) {
     const priority = Priority.create({ priority: newPriority });
 
     this.priority = priority;
   }
 
-  public updateDescription(newDescription: string) {
+  updateDescription(newDescription: string) {
     const description = Description.create({ description: newDescription });
 
     this.description = description;
   }
 
-  public updateTitle(newTitle: string) {
+  updateTitle(newTitle: string) {
     const title = Title.create({ title: newTitle });
 
     this.title = title;
   }
 
-  public updateColor(newColor: string) {
+  updateColor(newColor: string) {
     const color = Color.create({ colorCode: newColor });
 
     this.color = color;
+  }
+
+  toJSON() {
+    return {
+      subjectId: this.subjectId,
+      userId: this.userId,
+      title: this.title.title,
+      description: this.description.description,
+      priority: this.priority.priority,
+      color: this.color.colorCode,
+    };
   }
 }
