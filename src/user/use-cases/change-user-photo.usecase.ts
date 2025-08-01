@@ -16,7 +16,7 @@ export class ChangeUserPhotoUseCase {
 
     await this.userRepository.save(user);
 
-    return user.toPrimitives();
+    return user.toJSON();
   }
 }
 

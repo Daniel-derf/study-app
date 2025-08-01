@@ -124,12 +124,12 @@ export class User {
     return new User(entityInput);
   }
 
-  toPrimitives() {
+  toJSON() {
     return {
       userId: this.userId,
       name: this.name.name,
       email: this.email.value,
-      profileImgUrl: this.profileImgUrl.url,
+      profileImgUrl: this.profileImgUrl?.url,
     };
   }
 

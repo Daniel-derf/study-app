@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { Subject } from '../entities/subject.entity';
 import { ISubjectRepository } from './subject.interface.repository';
 
+@Injectable()
 export class SubjectPrismaRepository implements ISubjectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -41,9 +43,13 @@ export class SubjectPrismaRepository implements ISubjectRepository {
     const data = subject.toJSON();
 
     await this.prisma.subject.upsert({
-      where: { subjectId: subject.subjectId },
-      update: { ...data },
-      create: { ...data },
+      where: { subjectId: data.subjectId },
+      update: {
+        ...data,
+      },
+      create: {
+        ...data,
+      },
     });
   }
 

@@ -23,7 +23,7 @@ export class CreateUserUseCase {
 
     await this.userRepository.save(user, passwordHash);
 
-    return user.toPrimitives();
+    return user.toJSON();
   }
 }
 

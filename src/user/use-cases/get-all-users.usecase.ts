@@ -8,9 +8,7 @@ export class GetAllUsersUseCase {
   ) {}
 
   async execute() {
-    const users = (await this.userRepository.findAll()).map((u) =>
-      u.toPrimitives(),
-    );
+    const users = (await this.userRepository.findAll()).map((u) => u.toJSON());
 
     return users;
   }

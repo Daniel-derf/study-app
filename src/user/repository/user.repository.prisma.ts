@@ -36,21 +36,21 @@ export class UserPrismaRepository implements IUserRepository {
   }
 
   async save(user: User, passwordHash?: string): Promise<void> {
-    const data = user.toPrimitives();
+    const data = user.toJSON();
 
     await this.prisma.user.upsert({
       where: { userId: data.userId },
       update: {
         name: data.name,
         email: data.email,
-        profileImgUrl: data.profileImgUrl,
+        profileImgUrl: data?.profileImgUrl,
         passwordHash,
       },
       create: {
         userId: data.userId,
         name: data.name,
         email: data.email,
-        profileImgUrl: data.profileImgUrl,
+        profileImgUrl: data?.profileImgUrl,
         passwordHash: passwordHash ?? '',
       },
     });

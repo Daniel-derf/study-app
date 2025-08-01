@@ -52,12 +52,12 @@ describe('User Aggregate', () => {
 
     const newValidEmail = 'valid@gmail.com';
 
-    let userData = user.toPrimitives();
+    let userData = user.toJSON();
     expect(userData.email).toBe(validEmail);
 
     user.changeEmail(newValidEmail);
 
-    userData = user.toPrimitives();
+    userData = user.toJSON();
     expect(userData.email).toBe(newValidEmail);
   });
 
