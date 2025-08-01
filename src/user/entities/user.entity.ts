@@ -93,7 +93,7 @@ export class User {
   userId: string;
   name: Name;
   email: Email;
-  profileImgUrl: Url;
+  profileImgUrl?: Url;
 
   private constructor(input: UserInnerInput) {
     this.userId = input.userId;
@@ -105,7 +105,9 @@ export class User {
   static create(input: UserInput) {
     const name = Name.create(input?.name);
     const email = Email.create(input?.email);
-    const profileImgUrl = Url.create(input?.profileImgUrl);
+    const profileImgUrl = input.profileImgUrl
+      ? Url.create(input.profileImgUrl)
+      : undefined;
     const userId = randomUUID();
 
     return new User({ name, profileImgUrl, userId, email });
