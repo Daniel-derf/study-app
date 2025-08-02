@@ -5,9 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { APP_FILTER } from '@nestjs/core';
 import { DomainExceptionFilter } from './common/domain-exception.filter';
+import { AnalysisModule } from './analysis/analysis.module';
 
 @Module({
-  imports: [AuthModule, SubjectModule, UserModule],
+  imports: [AuthModule, SubjectModule, UserModule, AnalysisModule],
   controllers: [],
   providers: [
     AppService,
