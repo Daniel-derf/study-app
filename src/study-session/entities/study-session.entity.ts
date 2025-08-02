@@ -31,7 +31,7 @@ class Duration {
   }
 
   static create(value: number) {
-    if (typeof value !== 'number') {
+    if (typeof value !== 'number' || isNaN(value)) {
       throw new DomainError('The study duration must be a number');
     }
 
@@ -125,7 +125,7 @@ type StudySessionInnerInput = {
   subjectId: string;
 };
 
-type StudySessionInput = {
+export type StudySessionInput = {
   sessionId?: string;
   duration: number;
   startDate: Date;
