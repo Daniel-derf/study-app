@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   // output   = "../generated/prisma"
@@ -33,10 +27,31 @@ model Subject {
   description String
   priority    Int
   color       String
+  studyTime   Int?
 
   userId String @map("user_id")
 
-  user User @relation(fields: [userId], references: [userId])
+  user          User           @relation(fields: [userId], references: [userId])
+  studySessions StudySession[]
 
   @@map("subjects")
 }
+
+model StudySession {
+  sessionId String @id @default(uuid()) @map("session_id")
+
+  duration  Int
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+
+  subject   Subject @relation(fields: [subjectId], references: [subjectId])
+  subjectId String  @map("subject_id")
+
+  @@map("study_sessions")
+}
+
+/**
+ * study session:
+ * sessões de estudo registradas para o usuário saber quando e por quanto tempo estudou o que
+ * ideia: ao clicar em "estudar", inicia uma conexão websocket com o backend e fica contando o tempo, e o tempo é salvo automaticamente quando desconectar
+ */
