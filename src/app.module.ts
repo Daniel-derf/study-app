@@ -6,9 +6,10 @@ import { UserModule } from './user/user.module';
 import { APP_FILTER } from '@nestjs/core';
 import { DomainExceptionFilter } from './common/domain-exception.filter';
 import { AnalysisModule } from './analysis/analysis.module';
+import { StudySessionModule } from './study-session/study-session.module';
 
 @Module({
-  imports: [AuthModule, SubjectModule, UserModule, AnalysisModule],
+  imports: [AuthModule, SubjectModule, UserModule, AnalysisModule, StudySessionModule],
   controllers: [],
   providers: [
     AppService,
