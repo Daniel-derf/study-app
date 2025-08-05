@@ -6,6 +6,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Study App - Backend')
     .setDescription('Backend de um App de estudos e produtividade')
