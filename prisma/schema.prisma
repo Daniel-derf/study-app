@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId String @id @default(uuid()) @map("user_id")
+
+  name          String
+  email         String  @unique()
+  profileImgUrl String? @map("profile_img_url")
+
+  passwordHash String    @map("password_hash")
+  Subject      Subject[]
+
+  @@map("users")
+}
+
+model Subject {
+  subjectId   String @id @default(uuid()) @map("subject_id")
+  title       String
+  description String
+  priority    Int
+  color       String
+  studyTime   Int?
+
+  userId String @map("user_id")
+
+  user          User           @relation(fields: [userId], references: [userId])
+  studySessions StudySession[]
+
+  @@map("subjects")
+}
+
+model StudySession {
+  sessionId String @id @default(uuid()) @map("session_id")
+
+  duration  Int
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+
+  subject   Subject @relation(fields: [subjectId], references: [subjectId])
+  subjectId String  @map("subject_id")
+
+  @@map("study_sessions")
+}
+
+/**
+ * study session:
+ * sessões de estudo registradas para o usuário saber quando e por quanto tempo estudou o que
+ * ideia: ao clicar em "estudar", inicia uma conexão websocket com o backend e fica contando o tempo, e o tempo é salvo automaticamente quando desconectar
+ */
