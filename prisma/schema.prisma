@@ -15,8 +15,9 @@ model User {
   email         String  @unique()
   profileImgUrl String? @map("profile_img_url")
 
-  passwordHash String    @map("password_hash")
+  passwordHash String         @map("password_hash")
   Subject      Subject[]
+  StudySession StudySession[]
 
   @@map("users")
 }
@@ -44,8 +45,11 @@ model StudySession {
   startDate DateTime @map("start_date")
   endDate   DateTime @map("end_date")
 
-  subject   Subject @relation(fields: [subjectId], references: [subjectId])
-  subjectId String  @map("subject_id")
+  userId    String @map("user_id")
+  subjectId String @map("subject_id")
+
+  subject Subject @relation(fields: [subjectId], references: [subjectId])
+  user    User    @relation(fields: [userId], references: [userId])
 
   @@map("study_sessions")
 }
