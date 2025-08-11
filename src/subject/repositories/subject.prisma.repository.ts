@@ -7,15 +7,7 @@ import { ISubjectRepository } from './subject.interface.repository';
 export class SubjectPrismaRepository implements ISubjectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<Subject[]> {
-    const data = await this.prisma.subject.findMany();
-
-    const subjects = data.map(Subject.reconstitute);
-
-    return subjects;
-  }
-
-  async findById({ subjectId }: { subjectId: string }): Promise<Subject> {
+  async findById(subjectId: string): Promise<Subject> {
     const data = await this.prisma.subject.findUnique({ where: { subjectId } });
 
     const subject = Subject.reconstitute(data);

@@ -1,9 +1,7 @@
 import { Subject } from '../entities/subject.entity';
 
 export interface ISubjectRepository {
-  findAll(): Promise<Subject[]>;
-
-  findById(input: { subjectId: string }): Promise<Subject>;
+  findById(subjectId: string): Promise<Subject>;
 
   findBy(input: { priority: number; title: string }): Promise<Subject[]>;
 

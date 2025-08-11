@@ -18,6 +18,7 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Subject } from './entities/subject.entity';
@@ -48,11 +49,25 @@ export class SubjectController {
   })
   @ApiOperation({ summary: 'Get all study subjects for the logged-in user' })
   @UseGuards(JwtAuthGuard)
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Número da página',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Quantidade por página',
+  })
   @Get()
-  async findAll() {
-    const data = this.subjectService.findAll();
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    const data = this.subjectService.findAll(+page, +limit);
 
-    return { data };
+    return data;
   }
 
   @ApiOkResponse({
@@ -64,17 +79,47 @@ export class SubjectController {
     summary: 'Search study subjects for the logged-in user with filters',
   })
   @UseGuards(JwtAuthGuard)
+  @ApiQuery({
+    name: 'priority',
+    required: false,
+    type: Number,
+    description: 'Prioridade do assunto',
+  })
+  @ApiQuery({
+    name: 'title',
+    required: false,
+    type: String,
+    description: 'Título do assunto',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Número da página',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Quantidade por página',
+  })
   @Get('search')
   async find(
     @Query('priority') priority: string,
     @Query('title') title: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
   ) {
-    const data = this.subjectService.find({
-      priority: Number(priority),
+    const data = await this.subjectService.find({
+      priority: priority ? Number(priority) : undefined,
       title,
+      page: +page,
+      limit: +limit,
     });
 
-    return { data };
+    return data;
   }
 
   @ApiOkResponse({

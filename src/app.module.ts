@@ -9,7 +9,13 @@ import { AnalysisModule } from './analysis/analysis.module';
 import { StudySessionModule } from './study-session/study-session.module';
 
 @Module({
-  imports: [AuthModule, SubjectModule, UserModule, AnalysisModule, StudySessionModule],
+  imports: [
+    AuthModule,
+    SubjectModule,
+    UserModule,
+    AnalysisModule,
+    StudySessionModule,
+  ],
   controllers: [],
   providers: [
     AppService,
