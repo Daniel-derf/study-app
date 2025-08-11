@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { StudySessionService } from './study-session.service';
 import { StudySessionController } from './study-session.controller';
 import { CounterGateway } from './session-counter.gateway';
+import { PrismaService } from '../database/prisma.service';
 
 @Module({
   controllers: [StudySessionController],
-  providers: [StudySessionService, CounterGateway],
+  providers: [CounterGateway, PrismaService],
 })
 export class StudySessionModule {}

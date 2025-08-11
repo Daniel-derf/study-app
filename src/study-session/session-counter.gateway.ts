@@ -29,6 +29,10 @@ export class CounterGateway
     const clientId = client.id;
     console.log(`Cliente conectado: ${clientId}`);
 
+    const { userId, subjectId, token } = client.handshake.query;
+
+    console.log({ userId, subjectId, token });
+
     // Inicializa a duração
     this.connectionDurations.set(clientId, 0);
 
@@ -48,6 +52,10 @@ export class CounterGateway
   handleDisconnect(client: Socket) {
     const clientId = client.id;
     console.log(`Cliente desconectado: ${clientId}`);
+
+    const { userId, subjectId, token } = client.handshake.query;
+
+    console.log('desconectado: ', { userId, subjectId, token });
 
     // Para o contador
     const timer = this.clientTimers.get(clientId);

@@ -26,6 +26,11 @@
       // Altere o endereço se seu servidor estiver em outro host/porta
       const socket = io('http://localhost:3000', {
         transports: ['websocket'],
+        query: {
+          userId: '123',
+          subjectId: '123',
+          jwt: '123',
+        },
       });
 
       socket.on('connect', () => {

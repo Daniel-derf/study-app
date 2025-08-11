@@ -47,9 +47,28 @@ class Duration {
   }
 }
 
+type StudySessionInnerInput = {
+  sessionId: string;
+  duration: Duration;
+  startDate: StudyDate;
+  endDate: StudyDate;
+  subjectId: string;
+  userId: string;
+};
+
+export type StudySessionInput = {
+  sessionId?: string;
+  userId: string;
+  duration: number;
+  startDate: Date;
+  endDate: Date;
+  subjectId: string;
+};
+
 export class StudySession {
   sessionId: string;
   subjectId: string;
+  userId: string;
 
   private _startDate: StudyDate;
   private _endDate: StudyDate;
@@ -58,6 +77,7 @@ export class StudySession {
   private constructor(input: StudySessionInnerInput) {
     this.sessionId = input.sessionId;
     this.subjectId = input.subjectId;
+    this.userId = input.userId;
     this._duration = input.duration;
     this._startDate = input.startDate;
     this._endDate = input.endDate;
@@ -67,6 +87,7 @@ export class StudySession {
     const startDate = StudyDate.create(input.startDate);
     const endDate = StudyDate.create(input.endDate);
     const duration = Duration.create(input.duration);
+    const userId = input.userId;
 
     if (startDate.value.getTime() >= endDate.value.getTime())
       throw new DomainError('The end date must be greater than the start date');
@@ -76,6 +97,7 @@ export class StudySession {
       subjectId: input.subjectId,
       duration,
       startDate,
+      userId,
       endDate,
     };
 
@@ -86,6 +108,7 @@ export class StudySession {
     const innerInput: StudySessionInnerInput = {
       sessionId: input.sessionId,
       subjectId: input.subjectId,
+      userId: input.userId,
       duration: Duration.reconstitute(input.duration),
       startDate: StudyDate.reconstitute(input.startDate),
       endDate: StudyDate.reconstitute(input.endDate),
@@ -113,22 +136,7 @@ export class StudySession {
       subjectId: this.subjectId,
       startDate: this.startDate,
       endDate: this.endDate,
+      userId: this.userId,
     };
   }
 }
-
-type StudySessionInnerInput = {
-  sessionId: string;
-  duration: Duration;
-  startDate: StudyDate;
-  endDate: StudyDate;
-  subjectId: string;
-};
-
-export type StudySessionInput = {
-  sessionId?: string;
-  duration: number;
-  startDate: Date;
-  endDate: Date;
-  subjectId: string;
-};
