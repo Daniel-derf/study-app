@@ -17,13 +17,16 @@ export class SubjectService {
 
   // Commands
 
-  async create(createDto: CreateSubjectDto): Promise<Subject> {
+  async create(createDto: CreateSubjectDto): Promise<SubjectDto> {
     const subject = Subject.create(createDto);
     await this.subjectRepository.save(subject);
-    return subject;
+
+    const plainSubject = subject.toJSON();
+
+    return new SubjectDto(plainSubject);
   }
 
-  async update(id: string, updateDto: UpdateSubjectDto): Promise<Subject> {
+  async update(id: string, updateDto: UpdateSubjectDto): Promise<SubjectDto> {
     const subject = await this.subjectRepository.findById(id);
 
     if (!subject) throw new NotFoundException('This subject does not exist');
@@ -42,7 +45,8 @@ export class SubjectService {
     }
 
     await this.subjectRepository.save(subject);
-    return subject;
+
+    return new SubjectDto(subject.toJSON());
   }
 
   async remove(id: string): Promise<void> {
@@ -57,11 +61,14 @@ export class SubjectService {
   // Queries
 
   async findAll(page: number, limit: number): SubjectResponse {
-    const skip = (page - 1) * limit;
+    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+    const safeLimit = Number.isInteger(limit) && limit > 0 ? limit : 10;
+
+    const skip = (safePage - 1) * safeLimit;
     const [data, total] = await Promise.all([
       this.prisma.subject.findMany({
         skip,
-        take: limit,
+        take: safeLimit,
         orderBy: { title: 'asc' },
       }),
       this.prisma.subject.count(),
@@ -72,23 +79,34 @@ export class SubjectService {
     return {
       data: dtoData,
       total,
-      page,
-      lastPage: Math.ceil(total / limit),
+      page: safePage,
+      lastPage: Math.ceil(total / safeLimit),
     };
   }
 
   async find(input: FindSubjectInput): SubjectResponse {
-    const { priority, title, page, limit } = input;
+    const safePage =
+      Number.isInteger(input.page) && input.page > 0 ? input.page : 1;
+    const safeLimit =
+      Number.isInteger(input.limit) && input.limit > 0 ? input.limit : 10;
 
-    const skip = (page - 1) * limit;
+    const skip = (safePage - 1) * safeLimit;
     const [data, total] = await Promise.all([
       this.prisma.subject.findMany({
-        where: { priority, title },
+        where: {
+          ...(input.priority && { priority: input.priority }),
+          ...(input.title && { title: input.title }),
+        },
         skip,
-        take: limit,
+        take: safeLimit,
         orderBy: { title: 'asc' },
       }),
-      this.prisma.subject.count(),
+      this.prisma.subject.count({
+        where: {
+          ...(input.priority && { priority: input.priority }),
+          ...(input.title && { title: input.title }),
+        },
+      }),
     ]);
 
     const dtoData = data.map((data) => new SubjectDto(data));
@@ -96,13 +114,15 @@ export class SubjectService {
     return {
       data: dtoData,
       total,
-      page,
-      lastPage: Math.ceil(total / limit),
+      page: safePage,
+      lastPage: Math.ceil(total / safeLimit),
     };
   }
 
   async findOne(subjectId: string): Promise<SubjectDto> {
     const data = await this.prisma.subject.findUnique({ where: { subjectId } });
+
+    if (!data) throw new NotFoundException('This subject does not exist');
 
     const subject = new SubjectDto(data);
 
