@@ -18,11 +18,12 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Subject } from './entities/subject.entity';
 import { JwtAuthGuard } from '../auth/auth.guard';
+import { FindSubjectQueryDto } from './dto/find-subject.dto';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('Subjects')
 @Controller('subjects')
@@ -49,69 +50,23 @@ export class SubjectController {
   })
   @ApiOperation({ summary: 'Get all study subjects for the logged-in user' })
   @UseGuards(JwtAuthGuard)
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    type: Number,
-    example: 1,
-    description: 'Número da página',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    example: 10,
-    description: 'Quantidade por página',
-  })
   @Get()
-  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+  async findAll(@Query() query: PaginationQueryDto) {
+    const { page, limit } = query;
+
     const data = this.subjectService.findAll(+page, +limit);
 
     return data;
   }
 
-  @ApiOkResponse({
-    description: 'List of filtered Subject objects',
-    type: Subject,
-    isArray: true,
-  })
   @ApiOperation({
     summary: 'Search study subjects for the logged-in user with filters',
   })
   @UseGuards(JwtAuthGuard)
-  @ApiQuery({
-    name: 'priority',
-    required: false,
-    type: Number,
-    description: 'Prioridade do assunto',
-  })
-  @ApiQuery({
-    name: 'title',
-    required: false,
-    type: String,
-    description: 'Título do assunto',
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    type: Number,
-    example: 1,
-    description: 'Número da página',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    example: 10,
-    description: 'Quantidade por página',
-  })
   @Get('search')
-  async find(
-    @Query('priority') priority: string,
-    @Query('title') title: string,
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-  ) {
+  async find(@Query() query: FindSubjectQueryDto) {
+    const { priority, title, page, limit } = query;
+
     const data = await this.subjectService.find({
       priority: priority ? Number(priority) : undefined,
       title,
