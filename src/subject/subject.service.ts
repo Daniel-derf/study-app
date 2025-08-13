@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { ISubjectRepository } from './repositories/subject.interface.repository';
@@ -6,18 +11,27 @@ import { Subject } from './entities/subject.entity';
 import { PrismaService } from '../database/prisma.service';
 import { SubjectDto } from './dto/subject.dto';
 import { FindSubjectInput, SubjectResponse } from './types';
+import { IUserRepository } from '../user/repository/user.repository.interface';
 
 @Injectable()
 export class SubjectService {
   constructor(
     @Inject('ISubjectRepository')
     private readonly subjectRepository: ISubjectRepository,
+
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
+
     private readonly prisma: PrismaService,
   ) {}
 
   // Commands
 
   async create(createDto: CreateSubjectDto): Promise<SubjectDto> {
+    const userExists = await this.userRepository.findById(createDto.userId);
+
+    if (!userExists) throw new BadRequestException(`This user doesn't exist`);
+
     const subject = Subject.create(createDto);
     await this.subjectRepository.save(subject);
 

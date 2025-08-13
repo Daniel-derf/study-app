@@ -3,13 +3,15 @@ import { SubjectService } from './subject.service';
 import { SubjectController } from './subject.controller';
 import { SubjectPrismaRepository } from './repositories/subject.prisma.repository';
 import { PrismaService } from '../database/prisma.service';
+import { UserPrismaRepository } from '../user/repository/user.repository.prisma';
 
 @Module({
   controllers: [SubjectController],
   providers: [
     SubjectService,
-    { provide: 'ISubjectRepository', useClass: SubjectPrismaRepository },
     PrismaService,
+    { provide: 'ISubjectRepository', useClass: SubjectPrismaRepository },
+    { provide: 'IUserRepository', useClass: UserPrismaRepository },
   ],
 })
 export class SubjectModule {}
