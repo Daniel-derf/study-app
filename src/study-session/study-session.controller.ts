@@ -1,17 +1,17 @@
-// import {
-//   Controller,
-//   Get,
-//   Post,
-//   Body,
-//   Patch,
-//   Param,
-//   Delete,
-// } from '@nestjs/common';
+import {
+  Controller,
+  // Get,
+  // Post,
+  // Body,
+  // Patch,
+  // Param,
+  // Delete,
+} from '@nestjs/common';
 // import { StudySessionService } from './study-session.service';
 // import { CreateStudySessionDto } from './dto/create-study-session.dto';
 // import { UpdateStudySessionDto } from './dto/update-study-session.dto';
 
-// @Controller('study-session')
+@Controller('study-session')
 export class StudySessionController {
   // constructor(private readonly studySessionService: StudySessionService) {}
   // @Post()

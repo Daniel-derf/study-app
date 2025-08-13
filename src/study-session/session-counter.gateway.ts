@@ -6,6 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { FinishStudySessionUseCase } from './use-cases/finish-study-session.usecase';
 
 @WebSocketGateway({
   cors: {
@@ -16,6 +17,10 @@ import { Server, Socket } from 'socket.io';
 export class CounterGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
+  constructor(
+    private readonly finishStudySessionUseCase: FinishStudySessionUseCase,
+  ) {}
+
   @WebSocketServer()
   server: Server;
 
@@ -25,6 +30,9 @@ export class CounterGateway
   // Map para armazenar a duração da conexão de cada cliente
   private connectionDurations: Map<string, number> = new Map();
 
+  // Map para armazenar o startDate de cada cliente
+  private clientStartDates: Map<string, number> = new Map();
+
   handleConnection(client: Socket) {
     const clientId = client.id;
     console.log(`Cliente conectado: ${clientId}`);
@@ -32,6 +40,8 @@ export class CounterGateway
     const { userId, subjectId, token } = client.handshake.query;
 
     console.log({ userId, subjectId, token });
+
+    client.handshake.query['startDate'] = String(Date.now());
 
     // Inicializa a duração
     this.connectionDurations.set(clientId, 0);
@@ -47,9 +57,13 @@ export class CounterGateway
 
     // Armazena o timer
     this.clientTimers.set(clientId, interval);
+
+    // Armazena o startDate
+    const startDate = Date.now();
+    this.clientStartDates.set(clientId, startDate);
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     const clientId = client.id;
     console.log(`Cliente desconectado: ${clientId}`);
 
@@ -69,8 +83,24 @@ export class CounterGateway
       `Duração da conexão do cliente ${clientId}: ${totalDuration} segundos`,
     );
 
+    // Recupera o startDate
+    const startDate = this.clientStartDates.get(clientId);
+    if (startDate) {
+      const endDate = Date.now();
+
+      const input = {
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        userId: String(client.handshake.query.userId),
+        subjectId: String(client.handshake.query.subjectId),
+      };
+
+      await this.finishStudySessionUseCase.execute(input);
+    }
+
     // Limpa os dados
     this.clientTimers.delete(clientId);
     this.connectionDurations.delete(clientId);
+    this.clientStartDates.delete(clientId);
   }
 }
