@@ -7,10 +7,15 @@ export class FindAllStudySessionsUseCase {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(input: Input): Promise<StudySessionDto[]> {
-    const { userId } = input;
+    const { userId, subjectId, startDate, endDate } = input;
 
     const sessions = await this.prisma.studySession.findMany({
-      where: { userId },
+      where: {
+        userId,
+        ...(subjectId && { subjectId }),
+        ...(startDate && { startDate: { gte: startDate } }),
+        ...(endDate && { endDate: { lte: endDate } }),
+      },
       include: {
         subject: {
           select: {
@@ -30,4 +35,7 @@ export class FindAllStudySessionsUseCase {
 
 type Input = {
   userId: string;
+  subjectId?: string;
+  startDate?: Date;
+  endDate?: Date;
 };
