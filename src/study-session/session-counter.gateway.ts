@@ -26,44 +26,17 @@ export class CounterGateway
   @WebSocketServer()
   server: Server;
 
-  // Map para armazenar o contador de cada cliente
   private clientTimers: Map<string, NodeJS.Timeout> = new Map();
-
-  // Map para armazenar a duração da conexão de cada cliente
   private connectionDurations: Map<string, number> = new Map();
-
-  // Map para armazenar o startDate de cada cliente
   private clientStartDates: Map<string, number> = new Map();
 
   handleConnection(client: Socket) {
     try {
       const clientId = client.id;
-      console.log(`Cliente conectado: ${clientId}`);
+      this.logConnection(client);
 
-      const { userId, subjectId, token } = client.handshake.query;
-
-      console.log({ userId, subjectId, token });
-
-      client.handshake.query['startDate'] = String(Date.now());
-
-      // Inicializa a duração
-      this.connectionDurations.set(clientId, 0);
-
-      // Cria o contador que incrementa a cada segundo
-      const interval = setInterval(() => {
-        const duration = this.connectionDurations.get(clientId) ?? 0;
-        this.connectionDurations.set(clientId, duration + 1);
-
-        // Opcional: enviar a duração para o cliente
-        client.emit('connection-duration', duration + 1);
-      }, 1000);
-
-      // Armazena o timer
-      this.clientTimers.set(clientId, interval);
-
-      // Armazena o startDate
-      const startDate = Date.now();
-      this.clientStartDates.set(clientId, startDate);
+      this.initClientData(clientId);
+      this.startTimer(client, clientId);
     } catch (error) {
       this.logger.error(error.message);
     }
@@ -72,45 +45,61 @@ export class CounterGateway
   async handleDisconnect(client: Socket) {
     try {
       const clientId = client.id;
-      console.log(`Cliente desconectado: ${clientId}`);
+      this.logDisconnection(client);
 
-      const { userId, subjectId, token } = client.handshake.query;
+      this.clearTimer(clientId);
 
-      console.log('desconectado: ', { userId, subjectId, token });
-
-      // Para o contador
-      const timer = this.clientTimers.get(clientId);
-      if (timer) {
-        clearInterval(timer);
-      }
-
-      // Pega a duração final
-      const totalDuration = this.connectionDurations.get(clientId) ?? 0;
-      console.log(
-        `Duração da conexão do cliente ${clientId}: ${totalDuration} segundos`,
-      );
-
-      // Recupera o startDate
       const startDate = this.clientStartDates.get(clientId);
       if (startDate) {
         const endDate = Date.now();
-
-        const input = {
+        await this.finishStudySessionUseCase.execute({
           startDate: new Date(startDate),
           endDate: new Date(endDate),
           userId: String(client.handshake.query?.userId),
           subjectId: String(client.handshake.query?.subjectId),
-        };
-
-        await this.finishStudySessionUseCase.execute(input);
+        });
       }
 
-      // Limpa os dados
-      this.clientTimers.delete(clientId);
-      this.connectionDurations.delete(clientId);
-      this.clientStartDates.delete(clientId);
+      this.clearClientData(clientId);
     } catch (error) {
       this.logger.error(error.message);
     }
+  }
+
+  private logConnection(client: Socket) {
+    const { userId, subjectId, token } = client.handshake.query;
+    this.logger.log(`Cliente conectado: ${client.id}`);
+    this.logger.log({ userId, subjectId, token });
+  }
+
+  private logDisconnection(client: Socket) {
+    const { userId, subjectId, token } = client.handshake.query;
+    this.logger.log(`Cliente desconectado: ${client.id}`);
+    this.logger.log('desconectado: ', { userId, subjectId, token });
+  }
+
+  private initClientData(clientId: string) {
+    this.connectionDurations.set(clientId, 0);
+    this.clientStartDates.set(clientId, Date.now());
+  }
+
+  private startTimer(client: Socket, clientId: string) {
+    const interval = setInterval(() => {
+      const duration = this.connectionDurations.get(clientId) ?? 0;
+      this.connectionDurations.set(clientId, duration + 1);
+      client.emit('connection-duration', duration + 1);
+    }, 1000);
+    this.clientTimers.set(clientId, interval);
+  }
+
+  private clearTimer(clientId: string) {
+    const timer = this.clientTimers.get(clientId);
+    if (timer) clearInterval(timer);
+  }
+
+  private clearClientData(clientId: string) {
+    this.clientTimers.delete(clientId);
+    this.connectionDurations.delete(clientId);
+    this.clientStartDates.delete(clientId);
   }
 }
