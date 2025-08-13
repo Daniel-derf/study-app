@@ -3,6 +3,7 @@ import { IStudySessionRepository } from '../repository/study-session.interface.r
 import { StudySession } from '../entities/study-session.entity';
 import { IUserRepository } from '../../user/repository/user.repository.interface';
 import { ISubjectRepository } from '../../subject/repositories/subject.interface.repository';
+import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 export class FinishStudySessionUseCase {
@@ -22,9 +23,9 @@ export class FinishStudySessionUseCase {
   async execute(input: Input) {
     const { userId, subjectId } = input;
 
-    const userExists = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findById(userId);
 
-    if (!userExists) {
+    if (!user) {
       this.logger.error(`The user with ID ${userId} doesn't exist`);
 
       return;
@@ -38,20 +39,18 @@ export class FinishStudySessionUseCase {
       return;
     }
 
-    const duration = Math.floor(
-      (input.endDate.getTime() - input.startDate.getTime()) / 1000,
-    );
-
-    const session = StudySession.create({ ...input, duration });
+    const session = StudySession.create({ ...input });
 
     await this.sessionRepository.save(session);
 
-    const durationMinutes = duration / 60;
+    this.logSession(session, user);
+  }
 
-    const userData = userExists.toJSON();
-
+  private logSession(session: StudySession, user: User) {
+    const durationMinutes = session.getDurationInMinutes();
+    const { name } = user.toJSON();
     this.logger.log(
-      `Session of ${Math.floor(durationMinutes)} minutes saved successfully by user ${userData.name}`,
+      `Session of ${Math.floor(durationMinutes)} minutes saved successfully by user ${name}`,
     );
   }
 }

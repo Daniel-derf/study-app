@@ -58,8 +58,8 @@ type StudySessionInnerInput = {
 
 export type StudySessionInput = {
   sessionId?: string;
+  duration?: number;
   userId: string;
-  duration: number;
   startDate: Date;
   endDate: Date;
   subjectId: string;
@@ -86,11 +86,15 @@ export class StudySession {
   static create(input: StudySessionInput) {
     const startDate = StudyDate.create(input.startDate);
     const endDate = StudyDate.create(input.endDate);
-    const duration = Duration.create(input.duration);
     const userId = input.userId;
 
     if (startDate.value.getTime() >= endDate.value.getTime())
       throw new DomainError('The end date must be greater than the start date');
+
+    const durationInput = Math.floor(
+      (input.endDate.getTime() - input.startDate.getTime()) / 1000,
+    );
+    const duration = Duration.create(durationInput);
 
     const validatedInput: StudySessionInnerInput = {
       sessionId: randomUUID(),
@@ -127,6 +131,12 @@ export class StudySession {
 
   get duration() {
     return this._duration.value;
+  }
+
+  getDurationInMinutes() {
+    const durationMinutes = this.duration / 60;
+
+    return durationMinutes;
   }
 
   toJson() {
