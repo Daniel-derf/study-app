@@ -1,4 +1,3 @@
-// src/app.gateway.ts
 import {
   WebSocketGateway,
   OnGatewayConnection,
@@ -61,7 +60,7 @@ export class CounterGateway
       this.clearTimer(clientId);
 
       const startDate = this.clientStartDates.get(clientId);
-      const userId = this.clientUserIds.get(clientId); // Recupera o userId salvo
+      const userId = this.clientUserIds.get(clientId);
 
       if (startDate && userId) {
         const endDate = Date.now();
@@ -74,7 +73,7 @@ export class CounterGateway
       }
 
       this.clearClientData(clientId);
-      this.clientUserIds.delete(clientId); // Limpa o userId salvo
+      this.clientUserIds.delete(clientId);
     } catch (error) {
       this.logger.error(error.message);
     }
