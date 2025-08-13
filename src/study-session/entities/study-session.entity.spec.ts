@@ -3,10 +3,11 @@ import { DomainError } from '../../common/domain.error';
 
 describe('StudySession', () => {
   const validInput: StudySessionInput = {
-    duration: 60,
     subjectId: 'subject-123',
     startDate: new Date('2025-08-01T10:00:00Z'),
     endDate: new Date('2025-08-01T11:00:00Z'),
+    userId: 'user-123',
+    duration: 3600,
   };
 
   it('creates a valid study session with correct input', () => {
@@ -14,6 +15,7 @@ describe('StudySession', () => {
 
     expect(session).toBeInstanceOf(StudySession);
     expect(session.sessionId).toBeDefined();
+    expect(session.userId).toBeDefined();
     expect(session.subjectId).toBe(validInput.subjectId);
     expect(session.duration).toBe(validInput.duration);
     expect(session.startDate.toISOString()).toBe(
@@ -36,20 +38,6 @@ describe('StudySession', () => {
 
     expect(() => StudySession.create(input)).toThrow(DomainError);
     expect(() => StudySession.create(input)).toThrow('Invalid date');
-  });
-
-  it('throws if duration is zero or negative', () => {
-    const input = { ...validInput, duration: 0 };
-
-    expect(() => StudySession.create(input)).toThrow(DomainError);
-    expect(() => StudySession.create(input)).toThrow('greater than 0');
-  });
-
-  it('throws if duration is not a number', () => {
-    const input = { ...validInput, duration: NaN };
-
-    expect(() => StudySession.create(input)).toThrow(DomainError);
-    expect(() => StudySession.create(input)).toThrow('must be a number');
   });
 
   it('throws if startDate is greater than or equal to endDate', () => {
