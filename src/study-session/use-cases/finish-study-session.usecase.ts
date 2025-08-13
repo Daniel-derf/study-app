@@ -48,7 +48,11 @@ export class FinishStudySessionUseCase {
 
     const durationMinutes = duration / 60;
 
-    this.logger.log(`Session of ${durationMinutes} minutes saved successfully`);
+    const userData = userExists.toJSON();
+
+    this.logger.log(
+      `Session of ${Math.floor(durationMinutes)} minutes saved successfully by user ${userData.name}`,
+    );
   }
 }
 
