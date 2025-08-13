@@ -6,13 +6,15 @@ import { UserPrismaRepository } from '../user/repository/user.repository.prisma'
 import { SubjectPrismaRepository } from '../subject/repositories/subject.prisma.repository';
 import { FinishStudySessionUseCase } from './use-cases/finish-study-session.usecase';
 import { StudySessionPrismaRepository } from './repository/study-session.prisma.repository';
+import { FindAllStudySessionsUseCase } from './use-cases/find-all-study-sessions.usecase';
 
 @Module({
   controllers: [StudySessionController],
   providers: [
+    FindAllStudySessionsUseCase,
+    FinishStudySessionUseCase,
     CounterGateway,
     PrismaService,
-    FinishStudySessionUseCase,
     Logger,
     { provide: 'IUserRepository', useClass: UserPrismaRepository },
     { provide: 'ISubjectRepository', useClass: SubjectPrismaRepository },
