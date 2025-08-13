@@ -8,6 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { FinishStudySessionUseCase } from './use-cases/finish-study-session.usecase';
 import { Logger } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 
 @WebSocketGateway({
   cors: {
@@ -29,53 +30,70 @@ export class CounterGateway
   private clientTimers: Map<string, NodeJS.Timeout> = new Map();
   private connectionDurations: Map<string, number> = new Map();
   private clientStartDates: Map<string, number> = new Map();
+  private clientUserIds: Map<string, string> = new Map();
 
   handleConnection(client: Socket) {
     try {
       const clientId = client.id;
-      this.logConnection(client);
+      const token = client.handshake.query?.token as string;
+
+      const payload = this.validateToken(token);
+
+      const userID = payload.sub as string;
+
+      this.clientUserIds.set(clientId, userID);
+
+      this.logger.log(`Client connected: ${client.id}`);
 
       this.initClientData(clientId);
       this.startTimer(client, clientId);
     } catch (error) {
       this.logger.error(error.message);
+      client.disconnect();
     }
   }
 
   async handleDisconnect(client: Socket) {
     try {
       const clientId = client.id;
-      this.logDisconnection(client);
+      this.logger.log(`Client disconnected: ${client.id}`);
 
       this.clearTimer(clientId);
 
       const startDate = this.clientStartDates.get(clientId);
-      if (startDate) {
+      const userId = this.clientUserIds.get(clientId); // Recupera o userId salvo
+
+      if (startDate && userId) {
         const endDate = Date.now();
         await this.finishStudySessionUseCase.execute({
           startDate: new Date(startDate),
           endDate: new Date(endDate),
-          userId: String(client.handshake.query?.userId),
+          userId,
           subjectId: String(client.handshake.query?.subjectId),
         });
       }
 
       this.clearClientData(clientId);
+      this.clientUserIds.delete(clientId); // Limpa o userId salvo
     } catch (error) {
       this.logger.error(error.message);
     }
   }
 
-  private logConnection(client: Socket) {
-    const { userId, subjectId, token } = client.handshake.query;
-    this.logger.log(`Cliente conectado: ${client.id}`);
-    this.logger.log({ userId, subjectId, token });
-  }
-
-  private logDisconnection(client: Socket) {
-    const { userId, subjectId, token } = client.handshake.query;
-    this.logger.log(`Cliente desconectado: ${client.id}`);
-    this.logger.log('desconectado: ', { userId, subjectId, token });
+  private validateToken(token: string) {
+    if (!token) {
+      throw new Error('Token is missing');
+    }
+    if (typeof token !== 'string') {
+      throw new Error('Invalid token');
+    }
+    try {
+      const secret = process.env.JWT_SECRET;
+      return jwt.verify(token, secret);
+    } catch (err) {
+      this.logger.error(`jwt error: ${err.message}`);
+      throw new Error('Invalid or expired token');
+    }
   }
 
   private initClientData(clientId: string) {
