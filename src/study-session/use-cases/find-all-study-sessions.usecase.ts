@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { StudySessionDto } from '../dto/study-session.dto';
 
@@ -15,6 +15,12 @@ export class FindAllStudySessionsUseCase {
       page = 1,
       limit = 10,
     } = input;
+
+    const isInvalidDate = (date: Date) => date && isNaN(startDate.getTime());
+
+    if (isInvalidDate(startDate) || isInvalidDate(endDate)) {
+      throw new BadRequestException('Invalid date');
+    }
 
     const safePage = Number.isInteger(page) && page > 0 ? page : 1;
     const safeLimit = Number.isInteger(limit) && limit > 0 ? limit : 10;
