@@ -1,6 +1,7 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { FindAllStudySessionsUseCase } from './use-cases/find-all-study-sessions.usecase';
 import { JwtAuthGuard } from '../auth/auth.guard';
+import { FindSessionsQueryDto } from './dto/find-sessions-query.dto';
 
 type UserFromJwt = {
   userId: string;
@@ -17,12 +18,10 @@ export class StudySessionController {
   @Get()
   async findAll(
     @Req() { user }: { user: UserFromJwt },
-    @Query('subjectId') subjectId?: string,
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
+    @Query() query: FindSessionsQueryDto,
   ) {
+    const { subjectId, startDate, endDate, page, limit } = query;
+
     const input = {
       userId: user.userId,
       subjectId,
