@@ -2,11 +2,7 @@ import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { FindAllStudySessionsUseCase } from './use-cases/find-all-study-sessions.usecase';
 import { JwtAuthGuard } from '../auth/auth.guard';
 import { FindSessionsQueryDto } from './dto/find-sessions-query.dto';
-
-type UserFromJwt = {
-  userId: string;
-  email: string;
-};
+import { UserFromJwt } from '../common/types/user-from-jwt';
 
 @Controller('study-sessions')
 export class StudySessionController {
