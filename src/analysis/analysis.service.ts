@@ -85,6 +85,8 @@ export class AnalysisService {
       mostStudied,
       leastStudied,
       notStudied,
+      startDate: usedStartDate,
+      endDate: usedEndDate,
     };
   }
 
@@ -154,6 +156,6 @@ export class AnalysisService {
       return a.totalStudyTime - b.totalStudyTime;
     });
 
-    return toBeStudied;
+    return { ...toBeStudied, startDate: usedStartDate, endDate: usedEndDate };
   }
 }
